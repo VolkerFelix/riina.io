@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riina.io - Privacy Statement</title>
+    <style>
+        :root {
+            --bg: #f3efe6;
+            --ink: #1e2430;
+            --muted: #586173;
+            --panel: rgba(255, 255, 255, 0.78);
+            --panel-border: rgba(30, 36, 48, 0.08);
+            --accent: #dd6b38;
+            --accent-dark: #8d3d1d;
+            --sea: #0f766e;
+            --line: rgba(30, 36, 48, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top left, rgba(221, 107, 56, 0.14), transparent 28%),
+                radial-gradient(circle at top right, rgba(15, 118, 110, 0.12), transparent 24%),
+                linear-gradient(180deg, #f7f2ea 0%, var(--bg) 100%);
+            line-height: 1.6;
+        }
+
+        .page {
+            width: min(960px, calc(100% - 2rem));
+            margin: 0 auto;
+            padding: 1.25rem 0 3rem;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .brand {
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .topbar a {
+            text-decoration: none;
+            color: var(--ink);
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.65);
+            padding: 0.7rem 1rem;
+            border-radius: 999px;
+        }
+
+        .hero,
+        .section {
+            background: var(--panel);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--panel-border);
+            border-radius: 24px;
+            box-shadow: 0 12px 35px rgba(30, 36, 48, 0.08);
+        }
+
+        .hero {
+            padding: 2.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .eyebrow {
+            color: var(--accent-dark);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 0.8rem;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 4vw, 3.4rem);
+            line-height: 1.05;
+            margin-bottom: 1rem;
+            max-width: 12ch;
+        }
+
+        .hero p {
+            max-width: 70ch;
+            color: var(--muted);
+            font-size: 1.04rem;
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1.2rem;
+        }
+
+        .meta span {
+            padding: 0.55rem 0.8rem;
+            border-radius: 999px;
+            background: rgba(221, 107, 56, 0.08);
+            color: var(--accent-dark);
+            border: 1px solid rgba(221, 107, 56, 0.16);
+            font-size: 0.92rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .section {
+            padding: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.15rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p,
+        li {
+            color: var(--muted);
+        }
+
+        ul {
+            padding-left: 1.1rem;
+        }
+
+        li + li {
+            margin-top: 0.55rem;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        .note {
+            border-left: 4px solid var(--sea);
+            padding-left: 1rem;
+        }
+
+        strong {
+            color: var(--ink);
+        }
+
+        @media (max-width: 760px) {
+            .page {
+                width: min(100% - 1rem, 960px);
+                padding-top: 0.75rem;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .hero,
+            .section {
+                border-radius: 20px;
+            }
+
+            .hero {
+                padding: 1.5rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <nav class="topbar" aria-label="Primary">
+            <div class="brand">Riina.io</div>
+            <a href="index.html">Back to Home</a>
+        </nav>
+
+        <header class="hero">
+            <div class="eyebrow">Privacy Statement</div>
+            <h1>How Riina uses activity data</h1>
+            <p>
+                This page describes the current activity-data handling reflected in the related Riina application codebase.
+                It focuses on workout, route, profile, social, and analytics data that users sync, upload, or share through the product.
+            </p>
+            <div class="meta">
+                <span>Effective date: March 23, 2026</span>
+                <span>Based on current Riina project behavior</span>
+            </div>
+        </header>
+
+        <div class="grid">
+            <section class="section">
+                <h2>What activity data Riina collects</h2>
+                <ul>
+                    <li>Workout records imported from Apple HealthKit and Android Health Connect.</li>
+                    <li>Heart-rate samples, workout start and end times, calories burned, activity type, distance, speed, steps, elevation gain, and extended workout metrics.</li>
+                    <li>GPS route points when route data is included with a workout.</li>
+                    <li>Health-profile values such as resting heart rate, max heart rate, ventilatory thresholds, weight, height, age, and gender.</li>
+                    <li>Workout photos and videos, profile pictures, post content, comments, reactions, team chat messages, and related timestamps.</li>
+                </ul>
+            </section>
+
+            <section class="section">
+                <h2>How Riina uses that data</h2>
+                <ul>
+                    <li>To sync and store workouts, display workout history and details, and calculate training and game statistics.</li>
+                    <li>To calculate heart-rate zones and personalize scoring using health-profile values.</li>
+                    <li>To power social and game features such as public or friends-only workout posts, reactions, comments, leaderboards, notifications, and live game views.</li>
+                    <li>To support account features such as profile pictures, biometric sign-in preferences, and app notifications.</li>
+                </ul>
+            </section>
+
+            <section class="section">
+                <h2>Analytics and product improvement</h2>
+                <p>
+                    The mobile app includes an internal analytics system that records app session and screen-view events.
+                    The code hashes the user ID with SHA-256 and stores only a shortened hash for analytics tracking.
+                    Users can disable analytics from the app settings.
+                </p>
+            </section>
+
+            <section class="section">
+                <h2>Machine learning and AI processing</h2>
+                <ul>
+                    <li>Riina sends heart-rate workout samples, resting heart rate, max heart rate, and activity type to a separate ML classification service to classify workouts.</li>
+                    <li>Riina also sends game-summary context to Anthropic's Claude API to generate game commentary. That prompt can include usernames, team rosters, standings, MVP and LVP information, top scorers, and workout-based point totals.</li>
+                </ul>
+            </section>
+
+            <section class="section full">
+                <h2>How activity data may be disclosed to other users</h2>
+                <ul>
+                    <li>Workout posts support `public`, `friends`, and `private` visibility states in the application.</li>
+                    <li>If a workout is shared, other users may be able to see workout details, media, comments, reactions, and game-related performance information tied to that workout.</li>
+                    <li>GPS route data can be included with shared workouts. Users can disable future route sharing in settings, and the code notes that existing shared routes remain visible. Users can also hide route data on a workout post while preserving the underlying route data.</li>
+                    <li>Other authenticated users can access another user's health profile for certain workout-zone fields. The code and tests indicate that resting heart rate, max heart rate, and threshold values may be visible, while age, height, and weight are redacted.</li>
+                    <li>The backend media download handler currently allows any authenticated user to access stored media files.</li>
+                </ul>
+            </section>
+
+            <section class="section">
+                <h2>Controls available to users</h2>
+                <ul>
+                    <li>Disable analytics tracking in settings.</li>
+                    <li>Disable location sharing for future shared workouts.</li>
+                    <li>Hide route data on workout posts.</li>
+                    <li>Use workout and post visibility settings such as `public`, `friends`, or `private` where supported.</li>
+                    <li>Enable or disable biometric authentication on the device.</li>
+                </ul>
+            </section>
+
+            <section class="section">
+                <h2>Security and storage notes</h2>
+                <p>
+                    The codebase stores application data in PostgreSQL and media in object storage using signed upload and download URLs.
+                    This page does not add commitments beyond the current implementation and should be updated when data flows or access rules change.
+                </p>
+            </section>
+
+            <section class="section full note">
+                <h2>Important implementation note</h2>
+                <p>
+                    This statement is intentionally grounded in the current Riina project rather than generic policy language.
+                    If the application changes, especially around media access, route visibility, analytics, or third-party AI processing,
+                    this page should be revised to match the new behavior before release.
+                </p>
+            </section>
+        </div>
+    </div>
+</body>
+</html>
