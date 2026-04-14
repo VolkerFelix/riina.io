@@ -3,270 +3,908 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Riina.io - Coming Soon</title>
+    <title>riina &mdash; A Team Sport App for People who Train Alone</title>
+    <meta name="description" content="riina turns solo workouts into team competition. Asynchronous team sports powered by heart rate AI scoring. Works with any wearable.">
+    <meta property="og:title" content="riina &mdash; Team Sport App for Solo Athletes">
+    <meta property="og:description" content="Asynchronous team sports powered by heart rate AI scoring. Works with any wearable.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://riina.io">
     <style>
         :root {
             --bg-overlay: rgba(7, 12, 22, 0.58);
+            --bg-solid: rgb(7, 12, 22);
             --panel: rgba(7, 12, 22, 0.42);
+            --panel-solid: rgba(14, 20, 32, 0.72);
             --panel-border: rgba(255, 255, 255, 0.14);
             --text-main: #f5f7fb;
-            --text-soft: rgba(245, 247, 251, 0.8);
+            --text-soft: rgba(245, 247, 251, 0.7);
+            --text-muted: rgba(245, 247, 251, 0.45);
             --accent-a: #ff8a5b;
             --accent-b: #5eead4;
             --accent-c: #7dd3fc;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
-            height: 100vh;
-            background: linear-gradient(var(--bg-overlay), var(--bg-overlay)),
-                        url('assets/riina_bg_nologo.jpeg') center/cover no-repeat;
+            background: var(--bg-solid);
             color: var(--text-main);
-            overflow: hidden;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .page {
-            min-height: 100vh;
-            padding: 1.25rem;
+        /* ── Navbar ── */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 0 1.5rem;
+            height: 3.5rem;
             display: flex;
-            flex-direction: column;
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: flex-end;
             align-items: center;
+            justify-content: space-between;
+            background: rgba(7, 12, 22, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid transparent;
+            transition: background 0.3s, border-color 0.3s;
         }
-
-        .topbar a {
+        .navbar.scrolled {
+            background: rgba(7, 12, 22, 0.92);
+            border-bottom-color: var(--panel-border);
+        }
+        .navbar__brand {
+            font-size: 1.3rem;
+            font-weight: 700;
             color: var(--text-main);
             text-decoration: none;
-            padding: 0.7rem 1rem;
+            letter-spacing: 1px;
+        }
+        .navbar__links {
+            display: flex;
+            gap: 0.25rem;
+            align-items: center;
+        }
+        .navbar__links a {
+            color: var(--text-soft);
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 0.4rem 0.75rem;
             border-radius: 999px;
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            backdrop-filter: blur(12px);
-            transition: transform 0.2s ease, background 0.2s ease;
+            transition: color 0.2s, background 0.2s;
+        }
+        .navbar__links a:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.08);
         }
 
-        .topbar a:hover {
-            transform: translateY(-1px);
-            background: rgba(255, 255, 255, 0.18);
+        /* hamburger */
+        .nav-toggle { display: none; }
+        .nav-hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 10;
+        }
+        .nav-hamburger span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--text-main);
+            border-radius: 2px;
+            transition: transform 0.3s, opacity 0.3s;
         }
 
-        .hero {
-            flex: 1;
+        /* ── Sections ── */
+        .section {
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 7rem 1.5rem 5rem;
+            position: relative;
         }
-
-        .container {
+        .section__inner {
+            width: min(1100px, 100%);
+            margin: 0 auto;
+        }
+        .section__eyebrow {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            color: var(--text-muted);
             text-align: center;
-            max-width: 800px;
-            padding: 2rem;
-            background: var(--panel);
-            border-radius: 20px;
-            backdrop-filter: blur(14px);
-            border: 1px solid var(--panel-border);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-bottom: 0.75rem;
         }
-
-        .logo {
-            font-size: 4rem;
-            font-weight: bold;
+        .section__title {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 700;
+            text-align: center;
             margin-bottom: 1rem;
+            line-height: 1.15;
+        }
+        .section__subtitle {
+            text-align: center;
+            color: var(--text-soft);
+            font-size: 1.1rem;
+            margin-bottom: 3.5rem;
+            max-width: 580px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+        .accent   { color: var(--accent-a); }
+        .accent-b { color: var(--accent-b); }
+        .accent-c { color: var(--accent-c); }
+
+        /* ── Hero ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem 1.5rem;
+            background: linear-gradient(var(--bg-overlay), var(--bg-overlay)),
+                        url('assets/riina_bg_nologo.jpeg') center/cover no-repeat;
+            background-attachment: fixed;
+            position: relative;
+        }
+        .hero__content {
+            animation: fadeInUp 0.8s ease-out both;
+        }
+        .hero .logo {
+            font-size: clamp(3.5rem, 10vw, 7rem);
+            font-weight: 800;
+            margin-bottom: 1.25rem;
             background: linear-gradient(45deg, var(--accent-a), var(--accent-b), var(--accent-c), #c4f1be);
             background-size: 400% 400%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             animation: gradientShift 3s ease-in-out infinite;
-        }
-
-        .coming-soon {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
             letter-spacing: 2px;
         }
-
-        .description {
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
+        .hero__tagline {
+            font-size: clamp(1.15rem, 3vw, 1.75rem);
             color: var(--text-soft);
-            line-height: 1.6;
+            max-width: 550px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.4;
+        }
+        .hero__cta {
+            display: inline-block;
+            padding: 0.9rem 2.2rem;
+            background: var(--accent-a);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 999px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 0 20px rgba(255, 138, 91, 0.25);
+        }
+        .hero__cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 40px rgba(255, 138, 91, 0.45);
+        }
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s ease-in-out infinite;
+            opacity: 0.5;
+        }
+        .scroll-indicator::before {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 24px;
+            border-right: 2px solid var(--text-main);
+            border-bottom: 2px solid var(--text-main);
+            transform: rotate(45deg);
         }
 
-        .links {
+        /* ── Problem ── */
+        #problem {
+            background: radial-gradient(ellipse at 20% 20%, rgba(255,138,91,0.07), transparent 55%),
+                        var(--bg-solid);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .stat-card {
+            background: var(--panel-solid);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--panel-border);
+            border-top: 3px solid var(--accent-a);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+        }
+        .stat-number {
+            display: block;
+            font-size: clamp(3rem, 7vw, 4.5rem);
+            font-weight: 800;
+            color: var(--accent-a);
+            line-height: 1;
+            margin-bottom: 0.75rem;
+        }
+        .stat-label {
+            font-size: 1.05rem;
+            color: var(--text-main);
+            margin-bottom: 0.6rem;
+        }
+        .stat-sub {
+            font-size: 0.9rem;
+            color: var(--text-soft);
+        }
+
+        /* ── Solution ── */
+        #solution {
+            background: radial-gradient(ellipse at 80% 70%, rgba(94,234,212,0.06), transparent 55%),
+                        rgb(5, 9, 18);
+        }
+        .solution-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        .timeline {
+            position: relative;
+            padding-left: 2.5rem;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent-b), rgba(94,234,212,0.15));
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .timeline-item:last-child { margin-bottom: 0; }
+        .timeline-dot {
+            position: absolute;
+            left: -2.5rem;
+            top: 0.2rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent-b);
+            box-shadow: 0 0 12px rgba(94,234,212,0.4);
+        }
+        .timeline-dot::after {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border-radius: 50%;
+            background: rgb(5, 9, 18);
+        }
+        .timeline-time {
+            font-size: 0.8rem;
+            color: var(--accent-b);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .timeline-activity {
+            font-size: 1rem;
+            color: var(--text-main);
+            margin-top: 0.25rem;
+        }
+        .timeline-pts {
+            font-weight: 700;
+            color: var(--accent-a);
+        }
+        .team-score-card {
+            background: var(--panel-solid);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--panel-border);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        .team-score-card__label {
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+        .team-score-card__value {
+            display: block;
+            font-size: clamp(3rem, 6vw, 4.5rem);
+            font-weight: 800;
+            color: var(--accent-b);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        .team-score-card__unit {
+            font-size: 1rem;
+            color: var(--text-soft);
+        }
+
+        /* ── USPs ── */
+        #usps {
+            background: radial-gradient(ellipse at 50% 80%, rgba(255,138,91,0.05), transparent 55%),
+                        var(--bg-solid);
+        }
+        .usp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .usp-card {
+            background: var(--panel-solid);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .usp-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+        .usp-card:nth-child(1) { border-top: 3px solid var(--accent-a); }
+        .usp-card:nth-child(2) { border-top: 3px solid var(--accent-b); }
+        .usp-card:nth-child(3) { border-top: 3px solid var(--accent-c); }
+        .usp-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
             display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+        .usp-card:nth-child(1) .usp-icon { background: rgba(255,138,91,0.12); color: var(--accent-a); }
+        .usp-card:nth-child(2) .usp-icon { background: rgba(94,234,212,0.12); color: var(--accent-b); }
+        .usp-card:nth-child(3) .usp-icon { background: rgba(125,211,252,0.12); color: var(--accent-c); }
+        .usp-card h3 {
+            font-size: 1.15rem;
+            margin-bottom: 0.6rem;
+        }
+        .usp-card p {
+            color: var(--text-soft);
+            font-size: 0.95rem;
+            line-height: 1.55;
+        }
+
+        /* ── Algorithm ── */
+        #algorithm {
+            background: radial-gradient(ellipse at 30% 50%, rgba(94,234,212,0.06), transparent 55%),
+                        rgb(5, 9, 18);
+        }
+        .algo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .algo-card {
+            background: var(--panel-solid);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--panel-border);
+            border-left: 3px solid var(--accent-b);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+        .algo-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent-b);
+        }
+        .algo-card p {
+            color: var(--text-soft);
+            font-size: 0.95rem;
+            line-height: 1.55;
+        }
+
+        /* ── Compatibility ── */
+        #compatibility {
+            background: radial-gradient(ellipse at 70% 30%, rgba(125,211,252,0.06), transparent 55%),
+                        var(--bg-solid);
+        }
+        .device-grid {
+            display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             gap: 0.85rem;
+            margin-bottom: 2rem;
+        }
+        .device-badge {
+            padding: 0.7rem 1.4rem;
+            border-radius: 999px;
+            background: var(--panel-solid);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--panel-border);
+            font-size: 0.95rem;
+            color: var(--text-main);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .device-badge:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255,255,255,0.3);
+        }
+        .api-badges {
+            display: flex;
             flex-wrap: wrap;
-            margin-top: 1.75rem;
+            justify-content: center;
+            gap: 0.85rem;
+            margin-bottom: 2.5rem;
+        }
+        .api-badge {
+            padding: 0.7rem 1.4rem;
+            border-radius: 999px;
+            background: rgba(125,211,252,0.08);
+            border: 1px solid rgba(125,211,252,0.3);
+            font-size: 0.9rem;
+            color: var(--accent-c);
+            font-weight: 600;
+        }
+        .compat-note {
+            text-align: center;
+            color: var(--text-soft);
+            font-size: 1rem;
+            font-style: italic;
         }
 
-        .links a {
+        /* ── Beta CTA ── */
+        #beta {
+            background: radial-gradient(ellipse at 50% 50%, rgba(255,138,91,0.1), transparent 60%),
+                        rgb(5, 9, 18);
+        }
+        .beta-card {
+            background: var(--panel-solid);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--panel-border);
+            border-radius: 24px;
+            padding: 4rem 2rem;
+            text-align: center;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        .beta-card__title {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .beta-card__text {
+            color: var(--text-soft);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .beta-btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: var(--accent-a);
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 999px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 0 24px rgba(255, 138, 91, 0.3);
+            letter-spacing: 0.5px;
+        }
+        .beta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 48px rgba(255, 138, 91, 0.5);
+        }
+
+        /* ── Footer ── */
+        .footer {
+            min-height: auto;
+            padding: 4rem 1.5rem;
+            background: rgba(3, 6, 12, 0.95);
+            border-top: 1px solid var(--panel-border);
+            text-align: center;
+        }
+        .footer .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--accent-a), var(--accent-b), var(--accent-c), #c4f1be);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            margin-bottom: 0.75rem;
+        }
+        .footer__tagline {
+            color: var(--text-soft);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+        .footer__links {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .footer__links a {
             color: var(--text-main);
             text-decoration: none;
-            padding: 0.85rem 1.2rem;
+            padding: 0.6rem 1.1rem;
             border-radius: 999px;
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            background: rgba(255, 255, 255, 0.1);
-            transition: transform 0.2s ease, background 0.2s ease;
+            border: 1px solid var(--panel-border);
+            background: rgba(255, 255, 255, 0.06);
+            font-size: 0.9rem;
+            transition: transform 0.2s, background 0.2s;
         }
-
-        .links a:hover {
+        .footer__links a:hover {
             transform: translateY(-1px);
-            background: rgba(255, 255, 255, 0.16);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .footer__copy {
+            color: var(--text-muted);
+            font-size: 0.8rem;
         }
 
-        .loading-dots {
-            display: inline-block;
-            margin-top: 1rem;
-        }
-
-        .loading-dots::after {
-            content: '';
-            animation: dots 1.5s steps(4, end) infinite;
-        }
-
+        /* ── Animations ── */
         @keyframes gradientShift {
-            0%, 100% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50%      { transform: translateX(-50%) translateY(10px); }
         }
 
-        @keyframes dots {
-            0%, 20% {
-                content: '';
-            }
-            40% {
-                content: '.';
-            }
-            60% {
-                content: '..';
-            }
-            80%, 100% {
-                content: '...';
-            }
+        /* reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
         }
-
-        .floating-elements {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: hidden;
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
 
-        .floating-element {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .floating-element:nth-child(1) {
-            width: 80px;
-            height: 80px;
-            top: 20%;
-            left: 10%;
-            animation-delay: 0s;
-        }
-
-        .floating-element:nth-child(2) {
-            width: 60px;
-            height: 60px;
-            top: 60%;
-            right: 15%;
-            animation-delay: 2s;
-        }
-
-        .floating-element:nth-child(3) {
-            width: 100px;
-            height: 100px;
-            bottom: 20%;
-            left: 20%;
-            animation-delay: 4s;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0px) rotate(0deg);
-                opacity: 0.7;
-            }
-            50% {
-                transform: translateY(-20px) rotate(180deg);
-                opacity: 0.3;
-            }
-        }
-
+        /* ── Responsive ── */
         @media (max-width: 768px) {
-            .page {
+            .navbar { padding: 0 1rem; }
+            .navbar__links {
+                position: fixed;
+                top: 3.5rem;
+                right: 0;
+                width: 100%;
+                flex-direction: column;
+                background: rgba(7, 12, 22, 0.96);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
                 padding: 1rem;
+                gap: 0.25rem;
+                border-bottom: 1px solid var(--panel-border);
+                transform: translateY(-120%);
+                opacity: 0;
+                transition: transform 0.3s, opacity 0.3s;
+                pointer-events: none;
+            }
+            .navbar__links a {
+                padding: 0.75rem 1rem;
+                font-size: 0.95rem;
+                text-align: center;
+            }
+            .nav-hamburger { display: flex; }
+            .nav-toggle:checked ~ .navbar__links {
+                transform: translateY(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
+            .nav-toggle:checked ~ .nav-hamburger span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+            .nav-toggle:checked ~ .nav-hamburger span:nth-child(2) {
+                opacity: 0;
+            }
+            .nav-toggle:checked ~ .nav-hamburger span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
             }
 
-            .container {
-                margin: 1rem 0;
-                padding: 1.5rem;
+            .section { padding: 5rem 1rem 3rem; }
+            .hero { background-attachment: scroll; }
+            .solution-layout {
+                grid-template-columns: 1fr;
+                gap: 2rem;
             }
-            
-            .logo {
-                font-size: 2.5rem;
+        }
+
+        @media (max-width: 480px) {
+            .section { padding: 4rem 0.75rem 2.5rem; }
+            .stat-card, .usp-card, .algo-card { padding: 1.75rem 1.25rem; }
+            .stats-grid, .usp-grid, .algo-grid { gap: 1rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
             }
-            
-            .coming-soon {
-                font-size: 1.2rem;
-            }
-            
-            .description {
-                font-size: 1rem;
-            }
+            html { scroll-behavior: auto; }
         }
     </style>
 </head>
 <body>
-    <div class="page">
-        <div class="floating-elements">
-            <div class="floating-element"></div>
-            <div class="floating-element"></div>
-            <div class="floating-element"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar" aria-label="Primary">
+        <a href="#hero" class="navbar__brand">riina</a>
+        <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
+        <label for="nav-toggle" class="nav-hamburger" aria-hidden="true">
+            <span></span><span></span><span></span>
+        </label>
+        <div class="navbar__links">
+            <a href="#problem">Problem</a>
+            <a href="#solution">Solution</a>
+            <a href="#usps">Why riina</a>
+            <a href="#algorithm">How it Works</a>
+            <a href="#compatibility">Devices</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="account-deletion.html">Delete Account</a>
         </div>
+    </nav>
 
-        <nav class="topbar" aria-label="Primary">
-            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:flex-end;">
-                <a href="privacy.html">Privacy</a>
-                <a href="account-deletion.html">Delete account</a>
-            </div>
-        </nav>
+    <!-- Hero -->
+    <section id="hero" class="hero">
+        <div class="hero__content">
+            <h1 class="logo">riina</h1>
+            <p class="hero__tagline">A Team Sport App for People<br>who Train Alone.</p>
+            <a href="#beta" class="hero__cta">Apply for Beta</a>
+        </div>
+        <div class="scroll-indicator" aria-hidden="true"></div>
+    </section>
 
-        <main class="hero">
-            <div class="container">
-                <h1 class="logo">Riina.io</h1>
-                <h2 class="coming-soon">Coming Soon</h2>
-                <p class="description">
-                    Riina turns real workouts into game action. While the full experience is still on the way,
-                    you can already review how workout, route, profile, social, and analytics data are used.
-                </p>
-                <div class="loading-dots">Stay tuned</div>
-                <div class="links">
-                    <a href="privacy.html">Read the Privacy Statement</a>
-                    <a href="account-deletion.html">Request account deletion</a>
+    <!-- Problem -->
+    <section id="problem" class="section">
+        <div class="section__inner">
+            <p class="section__eyebrow">The Problem</p>
+            <h2 class="section__title">The Motivation <span class="accent">Graveyard</span></h2>
+            <p class="section__subtitle">People want to be active. The tools keep failing them.</p>
+            <div class="stats-grid">
+                <div class="stat-card reveal">
+                    <span class="stat-number">85%</span>
+                    <p class="stat-label">of gym memberships go unused</p>
+                    <p class="stat-sub">Most people can't sustain motivation alone.</p>
+                </div>
+                <div class="stat-card reveal reveal-delay-1">
+                    <span class="stat-number">95%</span>
+                    <p class="stat-label">of fitness apps abandoned in 90 days</p>
+                    <p class="stat-sub">Adult life killed team sports.</p>
+                </div>
+                <div class="stat-card reveal reveal-delay-2">
+                    <span class="stat-number">1B+</span>
+                    <p class="stat-label">wearable devices tracking everything</p>
+                    <p class="stat-sub">That data just sits there.</p>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </section>
+
+    <!-- Solution -->
+    <section id="solution" class="section">
+        <div class="section__inner">
+            <p class="section__eyebrow">The Solution</p>
+            <h2 class="section__title">Asynchronous <span class="accent-b">Team Sports</span></h2>
+            <p class="section__subtitle">Team accountability without synchronized schedules</p>
+            <div class="solution-layout">
+                <div class="timeline reveal">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div>
+                            <span class="timeline-time">Mon 6:00 AM</span>
+                            <p class="timeline-activity">Morning run &mdash; <span class="timeline-pts">+517 pts</span></p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div>
+                            <span class="timeline-time">Tue 8:00 PM</span>
+                            <p class="timeline-activity">Yoga session &mdash; <span class="timeline-pts">+224 pts</span></p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div>
+                            <span class="timeline-time">Wed 7:00 PM</span>
+                            <p class="timeline-activity">Cycling &mdash; <span class="timeline-pts">+639 pts</span></p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div>
+                            <span class="timeline-time">Thu 5:00 PM</span>
+                            <p class="timeline-activity">CrossFit &mdash; <span class="timeline-pts">+340 pts</span></p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div>
+                            <span class="timeline-time">Fri 9:00 AM</span>
+                            <p class="timeline-activity">Swimming &mdash; <span class="timeline-pts">+532 pts</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-score-card reveal reveal-delay-1">
+                    <span class="team-score-card__label">Weekly Team Score</span>
+                    <span class="team-score-card__value">2,252</span>
+                    <span class="team-score-card__unit">points from 5 members</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- USPs -->
+    <section id="usps" class="section">
+        <div class="section__inner">
+            <p class="section__eyebrow">Why riina</p>
+            <h2 class="section__title">Built Different</h2>
+            <p class="section__subtitle">Three things that set riina apart</p>
+            <div class="usp-grid">
+                <div class="usp-card reveal">
+                    <div class="usp-icon" aria-hidden="true">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    </div>
+                    <h3>Proprietary AI Algorithm</h3>
+                    <p>Heart rate-based scoring that's universal, fair, and accurate across all fitness levels and activities.</p>
+                </div>
+                <div class="usp-card reveal reveal-delay-1">
+                    <div class="usp-icon" aria-hidden="true">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <h3>Asynchronous Competition</h3>
+                    <p>Compete with your team on your own schedule. No coordinating calendars. Train whenever it fits your life.</p>
+                </div>
+                <div class="usp-card reveal reveal-delay-2">
+                    <div class="usp-icon" aria-hidden="true">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+                    </div>
+                    <h3>Works with Any Device</h3>
+                    <p>Apple Watch, Garmin, Fitbit, Oura, Whoop &mdash; if it tracks heart rate, it works with riina.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Algorithm -->
+    <section id="algorithm" class="section">
+        <div class="section__inner">
+            <p class="section__eyebrow">The Technology</p>
+            <h2 class="section__title">Heart Rate AI <span class="accent-b">Scoring</span></h2>
+            <p class="section__subtitle">Universal. Fair. Accurate.</p>
+            <div class="algo-grid">
+                <div class="algo-card reveal">
+                    <h3>Based on PPG</h3>
+                    <p>Photoplethysmography &mdash; the raw, reliable signal every wearable shares. No proprietary metrics needed. One universal input.</p>
+                </div>
+                <div class="algo-card reveal reveal-delay-1">
+                    <h3>Fair Across All Levels</h3>
+                    <p>Elite athlete vs. couch potato: both scored on relative effort. Your 100% counts the same as anyone else's.</p>
+                </div>
+                <div class="algo-card reveal reveal-delay-2">
+                    <h3>Any Activity Counts</h3>
+                    <p>Running, CrossFit, Yoga, Swimming, Cycling &mdash; if your heart beats harder, you score. No activity is left behind.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Compatibility -->
+    <section id="compatibility" class="section">
+        <div class="section__inner">
+            <p class="section__eyebrow">Hardware</p>
+            <h2 class="section__title">Works with <span class="accent-c">Everything</span></h2>
+            <p class="section__subtitle">We're a software layer, not a hardware company.</p>
+            <div class="device-grid reveal">
+                <span class="device-badge">Apple Watch</span>
+                <span class="device-badge">Samsung</span>
+                <span class="device-badge">Garmin</span>
+                <span class="device-badge">Fitbit</span>
+                <span class="device-badge">Xiaomi</span>
+                <span class="device-badge">Polar</span>
+                <span class="device-badge">Oura</span>
+                <span class="device-badge">Whoop</span>
+                <span class="device-badge">Amazfit</span>
+            </div>
+            <div class="api-badges reveal reveal-delay-1">
+                <span class="api-badge">Apple HealthKit</span>
+                <span class="api-badge">Android Health Connect</span>
+            </div>
+            <p class="compat-note reveal reveal-delay-2">No device lock-in = no barrier to entry</p>
+        </div>
+    </section>
+
+    <!-- Beta CTA -->
+    <section id="beta" class="section">
+        <div class="section__inner">
+            <div class="beta-card reveal">
+                <p class="section__eyebrow">Early Access</p>
+                <h2 class="beta-card__title">Join the <span class="accent">Beta</span></h2>
+                <p class="beta-card__text">Be among the first to experience riina. Apply for early access and help shape the future of team fitness.</p>
+                <a href="mailto:beta@riina.io?subject=Beta%20Application&body=Hi%20riina%20team%2C%0A%0AI'd%20like%20to%20apply%20for%20the%20beta.%0A%0AName%3A%20%0AWearable%20device%3A%20%0AHow%20I%20train%3A%20" class="beta-btn">Apply for Beta</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="section__inner">
+            <div class="logo">riina</div>
+            <p class="footer__tagline">A Team Sport App for People who Train Alone.</p>
+            <div class="footer__links">
+                <a href="privacy.html">Privacy Statement</a>
+                <a href="account-deletion.html">Account Deletion</a>
+            </div>
+            <p class="footer__copy">&copy; 2025 Riina. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const reveals = document.querySelectorAll('.reveal');
+            if ('IntersectionObserver' in window) {
+                const obs = new IntersectionObserver((entries) => {
+                    entries.forEach(e => {
+                        if (e.isIntersecting) {
+                            e.target.classList.add('visible');
+                            obs.unobserve(e.target);
+                        }
+                    });
+                }, { threshold: 0.15 });
+                reveals.forEach(el => obs.observe(el));
+            } else {
+                reveals.forEach(el => el.classList.add('visible'));
+            }
+
+            const nav = document.querySelector('.navbar');
+            const toggle = document.getElementById('nav-toggle');
+            window.addEventListener('scroll', () => {
+                nav.classList.toggle('scrolled', window.scrollY > 50);
+            }, { passive: true });
+
+            // Close mobile menu on link click
+            document.querySelectorAll('.navbar__links a').forEach(a => {
+                a.addEventListener('click', () => { toggle.checked = false; });
+            });
+        });
+    </script>
 </body>
 </html>
