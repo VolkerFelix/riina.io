@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>riina &mdash; Recommended Wearables</title>
+    <meta name="description" content="Wearables recommended for riina. Why heart rate data quality matters and which devices deliver the best optical and electrical HR signals for accurate scoring.">
+    <style>
+        :root {
+            --bg-overlay: rgba(7, 12, 22, 0.58);
+            --bg-solid: rgb(7, 12, 22);
+            --panel: rgba(7, 12, 22, 0.42);
+            --panel-solid: rgba(14, 20, 32, 0.72);
+            --panel-border: rgba(255, 255, 255, 0.14);
+            --text-main: #f5f7fb;
+            --text-soft: rgba(245, 247, 251, 0.7);
+            --text-muted: rgba(245, 247, 251, 0.45);
+            --accent-a: #ff8a5b;
+            --accent-b: #5eead4;
+            --accent-c: #7dd3fc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+            background: var(--bg-solid);
+            color: var(--text-main);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Navbar ── */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            z-index: 1000;
+            padding: 0 1.5rem;
+            height: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(7, 12, 22, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--panel-border);
+        }
+        .navbar__brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+        .navbar__links {
+            display: flex;
+            gap: 0.25rem;
+            align-items: center;
+        }
+        .navbar__links a {
+            color: var(--text-soft);
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 0.4rem 0.75rem;
+            border-radius: 999px;
+            transition: color 0.2s, background 0.2s;
+        }
+        .navbar__links a:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .navbar__links a.active {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* hamburger */
+        .nav-toggle { display: none; }
+        .nav-hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 10;
+        }
+        .nav-hamburger span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--text-main);
+            border-radius: 2px;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        /* ── Page layout ── */
+        .page {
+            width: min(960px, calc(100% - 3rem));
+            margin: 0 auto;
+            padding: 5.5rem 0 4rem;
+        }
+
+        /* ── Hero header ── */
+        .page-hero {
+            background: var(--panel-solid);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--panel-border);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .page-hero__eyebrow {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            color: var(--accent-a);
+            margin-bottom: 0.75rem;
+        }
+        .page-hero__title {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 1rem;
+        }
+        .page-hero__text {
+            color: var(--text-soft);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            max-width: 70ch;
+        }
+        .page-hero__meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
+        }
+        .page-hero__meta span {
+            padding: 0.5rem 0.85rem;
+            border-radius: 999px;
+            background: rgba(255, 138, 91, 0.1);
+            color: var(--accent-a);
+            border: 1px solid rgba(255, 138, 91, 0.2);
+            font-size: 0.88rem;
+        }
+
+        /* ── Content cards ── */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.25rem;
+        }
+        .card {
+            background: var(--panel-solid);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+        .card.full { grid-column: 1 / -1; }
+        .card.highlight {
+            border-left: 3px solid var(--accent-b);
+        }
+        .card h2 {
+            font-size: 1.15rem;
+            margin-bottom: 0.75rem;
+        }
+        .card h2 .accent { color: var(--accent-a); }
+        .card h2 .accent-b { color: var(--accent-b); }
+        .card p {
+            color: var(--text-soft);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .card p + p { margin-top: 0.75rem; }
+        .card ul {
+            padding-left: 1.1rem;
+        }
+        .card li {
+            color: var(--text-soft);
+            font-size: 0.95rem;
+            line-height: 1.55;
+        }
+        .card li + li { margin-top: 0.5rem; }
+        .card strong { color: var(--text-main); }
+
+        /* ── Product list ── */
+        .brand-group {
+            margin-top: 1rem;
+        }
+        .brand-group h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-a);
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid var(--panel-border);
+        }
+        .product-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .product-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.85rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            margin-top: 0;
+        }
+        .product-list li:last-child { border-bottom: none; }
+        .product-info { flex: 1; }
+        .product-name {
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+        .product-type {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+        }
+        .product-link {
+            text-decoration: none;
+            color: var(--accent-a);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.45rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(255, 138, 91, 0.1);
+            border: 1px solid rgba(255, 138, 91, 0.2);
+            transition: background 0.2s;
+            white-space: nowrap;
+            margin-left: 1rem;
+        }
+        .product-link:hover {
+            background: rgba(255, 138, 91, 0.22);
+        }
+        .tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 0.2rem 0.5rem;
+            border-radius: 999px;
+            margin-left: 0.4rem;
+            vertical-align: middle;
+        }
+        .tag--best {
+            background: rgba(94, 234, 212, 0.12);
+            color: var(--accent-b);
+            border: 1px solid rgba(94, 234, 212, 0.25);
+        }
+        .tag--value {
+            background: rgba(125, 211, 252, 0.1);
+            color: var(--accent-c);
+            border: 1px solid rgba(125, 211, 252, 0.2);
+        }
+        .disclosure {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            margin-top: 3rem;
+            padding: 3rem 1.5rem;
+            border-top: 1px solid var(--panel-border);
+            text-align: center;
+        }
+        .footer .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--accent-a), var(--accent-b), var(--accent-c), #c4f1be);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            margin-bottom: 0.75rem;
+        }
+        .footer__tagline {
+            color: var(--text-soft);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+        .footer__links {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .footer__links a {
+            color: var(--text-main);
+            text-decoration: none;
+            padding: 0.6rem 1.1rem;
+            border-radius: 999px;
+            border: 1px solid var(--panel-border);
+            background: rgba(255, 255, 255, 0.06);
+            font-size: 0.9rem;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .footer__links a:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .footer__copy {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .navbar { padding: 0 1rem; }
+            .navbar__links {
+                position: fixed;
+                top: 3.5rem; right: 0; width: 100%;
+                flex-direction: column;
+                background: rgba(7, 12, 22, 0.96);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                padding: 1rem;
+                gap: 0.25rem;
+                border-bottom: 1px solid var(--panel-border);
+                transform: translateY(-120%);
+                opacity: 0;
+                transition: transform 0.3s, opacity 0.3s;
+                pointer-events: none;
+            }
+            .navbar__links a {
+                padding: 0.75rem 1rem;
+                font-size: 0.95rem;
+                text-align: center;
+            }
+            .nav-hamburger { display: flex; }
+            .nav-toggle:checked ~ .navbar__links {
+                transform: translateY(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
+            .nav-toggle:checked ~ .nav-hamburger span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+            .nav-toggle:checked ~ .nav-hamburger span:nth-child(2) {
+                opacity: 0;
+            }
+            .nav-toggle:checked ~ .nav-hamburger span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
+            }
+
+            .page { padding: 4.5rem 0 3rem; width: min(100% - 1rem, 960px); }
+            .page-hero { padding: 2rem 1.5rem; border-radius: 20px; }
+            .content-grid { grid-template-columns: 1fr; }
+            .card { border-radius: 20px; padding: 1.5rem; }
+            .product-list li {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            .product-link { margin-left: 0; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar" aria-label="Primary">
+        <a href="index.html" class="navbar__brand">riina</a>
+        <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
+        <label for="nav-toggle" class="nav-hamburger" aria-hidden="true">
+            <span></span><span></span><span></span>
+        </label>
+        <div class="navbar__links">
+            <a href="index.html">Home</a>
+            <a href="wearables.html" class="active">Wearables</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="account-deletion.html">Delete Account</a>
+        </div>
+    </nav>
+
+    <div class="page">
+
+        <header class="page-hero">
+            <div class="page-hero__eyebrow">Recommended Wearables</div>
+            <h1 class="page-hero__title">Why heart rate quality matters for riina</h1>
+            <p class="page-hero__text">
+                riina scores every workout using heart rate data. The algorithm classifies effort zones, calculates time-in-zone distributions,
+                and derives a point score that feeds into team leaderboards. Garbage HR signal in means garbage scores out.
+                This page explains what makes a good HR source and lists the wearables we have tested and recommend.
+            </p>
+            <div class="page-hero__meta">
+                <span>Updated: April 2026</span>
+                <span>Affiliate links included</span>
+            </div>
+        </header>
+
+        <div class="content-grid">
+
+            <section class="card">
+                <h2>Optical PPG vs. electrical <span class="accent-b">ECG</span></h2>
+                <p>
+                    Most wrist-worn wearables use <strong>photoplethysmography (PPG)</strong> &mdash; green LEDs that measure blood volume changes through the skin.
+                    PPG works well at rest and during steady-state cardio, but can struggle with motion artifacts during high-intensity or
+                    wrist-flexion-heavy activities like rowing or CrossFit.
+                </p>
+                <p>
+                    <strong>Chest straps</strong> use electrical sensors (ECG-grade) that detect the heart's actual electrical impulses.
+                    They are largely immune to motion noise and deliver near-clinical accuracy across all intensity levels.
+                    For riina, this translates to more reliable zone classification and fairer scoring.
+                </p>
+            </section>
+
+            <section class="card">
+                <h2>What riina needs from your <span class="accent">device</span></h2>
+                <ul>
+                    <li><strong>Continuous HR samples</strong> &mdash; riina requires beat-by-beat or at minimum 1 Hz heart rate data during a workout. Devices that only record summary averages are not compatible.</li>
+                    <li><strong>Platform integration</strong> &mdash; the device must sync workout data to Apple HealthKit (iOS) or Android Health Connect so riina can import it.</li>
+                    <li><strong>Accurate zone transitions</strong> &mdash; riina's scoring algorithm weights time spent in higher HR zones more heavily. If the sensor lags on zone transitions or drops beats, your score will be off.</li>
+                    <li><strong>Low artifact rate</strong> &mdash; spikes, dropouts, and flatlines corrupt the time-in-zone calculation. Fewer artifacts = fairer scoring.</li>
+                </ul>
+            </section>
+
+            <section class="card full highlight">
+                <h2>How bad HR data hurts your score</h2>
+                <p>
+                    riina's AI scoring model ingests the full HR time series alongside your resting HR, max HR, and ventilatory thresholds.
+                    A wrist sensor that reads 20 BPM low during intervals will under-count Zone 4/5 time, costing you points.
+                    Conversely, a sensor that spikes erroneously can inflate scores unfairly. Either case undermines the competitive integrity
+                    of team games. The devices listed below are ones we have validated to produce clean, scorable signals across a range of workout types.
+                </p>
+            </section>
+
+            <section class="card full">
+                <h2>Recommended devices</h2>
+                <p class="disclosure">
+                    The links below are Amazon affiliate links. If you purchase through them, riina earns a small commission at no extra cost to you.
+                    We only recommend devices we have tested and validated with the riina scoring pipeline.
+                </p>
+
+                <div class="brand-group">
+                    <h3>Polar</h3>
+                    <ul class="product-list">
+                        <li>
+                            <div class="product-info">
+                                <span class="product-name">Polar H10 Heart Rate Chest Strap</span>
+                                <span class="tag tag--best">Best accuracy</span>
+                                <div class="product-type">ECG chest strap &middot; ANT+ & Bluetooth &middot; Built-in memory &middot; Waterproof</div>
+                            </div>
+                            <a href="https://amzn.to/4cs5ZYy" target="_blank" rel="noopener" class="product-link">View on Amazon</a>
+                        </li>
+                        <li>
+                            <div class="product-info">
+                                <span class="product-name">Polar Pacer</span>
+                                <div class="product-type">GPS running watch &middot; Optical PPG &middot; 35 h battery &middot; 40 g</div>
+                            </div>
+                            <a href="https://amzn.to/48LMqJG" target="_blank" rel="noopener" class="product-link">View on Amazon</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="brand-group">
+                    <h3>Garmin</h3>
+                    <ul class="product-list">
+                        <li>
+                            <div class="product-info">
+                                <span class="product-name">Garmin Fenix 7 Pro Solar</span>
+                                <div class="product-type">Multisport GPS &middot; Optical PPG (Elevate 4) &middot; Solar charging &middot; 22-day battery</div>
+                            </div>
+                            <a href="https://amzn.to/3Q6jy8N" target="_blank" rel="noopener" class="product-link">View on Amazon</a>
+                        </li>
+                        <li>
+                            <div class="product-info">
+                                <span class="product-name">Garmin Vivoactive 5</span>
+                                <div class="product-type">Fitness GPS smartwatch &middot; AMOLED &middot; Optical PPG &middot; 11-day battery</div>
+                            </div>
+                            <a href="https://amzn.to/3Q2885Y" target="_blank" rel="noopener" class="product-link">View on Amazon</a>
+                        </li>
+                        <li>
+                            <div class="product-info">
+                                <span class="product-name">Garmin Forerunner 55</span>
+                                <span class="tag tag--value">Budget pick</span>
+                                <div class="product-type">GPS running watch &middot; Optical PPG &middot; 14-day battery &middot; Beginner-friendly</div>
+                            </div>
+                            <a href="https://amzn.to/4syp80U" target="_blank" rel="noopener" class="product-link">View on Amazon</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="brand-group">
+                    <h3>Apple</h3>
+                    <ul class="product-list">
+                        <li>
+                            <div class="product-info">
+                                <span class="product-name">Apple Watch Ultra 3</span>
+                                <div class="product-type">49 mm rugged titanium &middot; Optical PPG + electrical ECG &middot; GPS + Cellular &middot; 36 h battery</div>
+                            </div>
+                            <a href="https://amzn.to/4tMl7Hl" target="_blank" rel="noopener" class="product-link">View on Amazon</a>
+                        </li>
+                        <li>
+                            <div class="product-info">
+                                <span class="product-name">Apple Watch Series 11</span>
+                                <div class="product-type">46 mm aluminum &middot; Optical PPG + electrical ECG &middot; Always-on display &middot; 24 h battery</div>
+                            </div>
+                            <a href="https://amzn.to/4t8gCH7" target="_blank" rel="noopener" class="product-link">View on Amazon</a>
+                        </li>
+                        <li>
+                            <div class="product-info">
+                                <span class="product-name">Apple Watch SE 3</span>
+                                <span class="tag tag--value">Budget pick</span>
+                                <div class="product-type">40 mm aluminum &middot; Optical PPG &middot; Always-on display &middot; 18 h battery</div>
+                            </div>
+                            <a href="https://amzn.to/4sCD4qZ" target="_blank" rel="noopener" class="product-link">View on Amazon</a>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Getting the best signal from optical sensors</h2>
+                <ul>
+                    <li><strong>Wear it tight</strong> &mdash; a loose band lets ambient light leak under the sensor, causing noise. Snug but not restrictive.</li>
+                    <li><strong>Wear it higher</strong> &mdash; position the watch 1&ndash;2 finger-widths above the wrist bone where the skin is flatter and has better perfusion.</li>
+                    <li><strong>Avoid tattoos</strong> &mdash; dark ink absorbs the green LED light and degrades the PPG signal significantly.</li>
+                    <li><strong>Warm up first</strong> &mdash; cold skin constricts surface blood vessels. Start easy for 2&ndash;3 minutes before intense efforts to let the sensor lock on.</li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <h2>When to choose a <span class="accent-b">chest strap</span></h2>
+                <p>
+                    If you primarily do HIIT, CrossFit, rowing, or any workout involving rapid wrist movement, a chest strap like the
+                    <strong>Polar H10</strong> will produce noticeably cleaner data. It pairs to your phone or watch via Bluetooth and
+                    the HR samples flow through to HealthKit or Health Connect the same way native wrist data does.
+                </p>
+                <p>
+                    For steady-state running, cycling, or walking, modern optical sensors from Garmin, Apple, and Polar are
+                    accurate enough that you will not see a meaningful scoring difference versus a chest strap.
+                </p>
+            </section>
+
+            <section class="card full highlight">
+                <h2>A note on data and compatibility</h2>
+                <p>
+                    riina does not connect to wearables directly. It reads workout data from Apple HealthKit (iOS) and Android Health Connect.
+                    As long as your wearable syncs HR data to one of these platforms, it will work with riina. The devices on this page are the ones
+                    we have specifically validated for HR signal quality during real scored games.
+                </p>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="logo">riina</div>
+        <p class="footer__tagline">A Team Sport App for People who Train Alone.</p>
+        <div class="footer__links">
+            <a href="wearables.html">Wearables</a>
+            <a href="privacy.html">Privacy Statement</a>
+            <a href="account-deletion.html">Account Deletion</a>
+        </div>
+        <p class="footer__copy">&copy; 2025 Riina. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('nav-toggle');
+            document.querySelectorAll('.navbar__links a').forEach(a => {
+                a.addEventListener('click', () => { toggle.checked = false; });
+            });
+        });
+    </script>
+</body>
+</html>

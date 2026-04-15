@@ -3,210 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Riina.io - Privacy Statement</title>
+    <title>riina &mdash; Privacy Statement</title>
     <style>
         :root {
-            --bg: #f3efe6;
-            --ink: #1e2430;
-            --muted: #586173;
-            --panel: rgba(255, 255, 255, 0.78);
-            --panel-border: rgba(30, 36, 48, 0.08);
-            --accent: #dd6b38;
-            --accent-dark: #8d3d1d;
-            --sea: #0f766e;
-            --line: rgba(30, 36, 48, 0.12);
+            --bg-overlay: rgba(7, 12, 22, 0.58);
+            --bg-solid: rgb(7, 12, 22);
+            --panel: rgba(7, 12, 22, 0.42);
+            --panel-solid: rgba(14, 20, 32, 0.72);
+            --panel-border: rgba(255, 255, 255, 0.14);
+            --text-main: #f5f7fb;
+            --text-soft: rgba(245, 247, 251, 0.7);
+            --text-muted: rgba(245, 247, 251, 0.45);
+            --accent-a: #ff8a5b;
+            --accent-b: #5eead4;
+            --accent-c: #7dd3fc;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
-            color: var(--ink);
-            background:
-                radial-gradient(circle at top left, rgba(221, 107, 56, 0.14), transparent 28%),
-                radial-gradient(circle at top right, rgba(15, 118, 110, 0.12), transparent 24%),
-                linear-gradient(180deg, #f7f2ea 0%, var(--bg) 100%);
-            line-height: 1.6;
+            background: var(--bg-solid);
+            color: var(--text-main);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .page {
-            width: min(960px, calc(100% - 2rem));
-            margin: 0 auto;
-            padding: 1.25rem 0 3rem;
-        }
-
-        .topbar {
+        /* ── Navbar ── */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            z-index: 1000;
+            padding: 0 1.5rem;
+            height: 3.5rem;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            justify-content: space-between;
+            background: rgba(7, 12, 22, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--panel-border);
         }
-
-        .brand {
-            font-size: 0.95rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--muted);
-        }
-
-        .topbar a {
+        .navbar__brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-main);
             text-decoration: none;
-            color: var(--ink);
-            border: 1px solid var(--line);
-            background: rgba(255, 255, 255, 0.65);
-            padding: 0.7rem 1rem;
+            letter-spacing: 1px;
+        }
+        .navbar__links {
+            display: flex;
+            gap: 0.25rem;
+            align-items: center;
+        }
+        .navbar__links a {
+            color: var(--text-soft);
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 0.4rem 0.75rem;
             border-radius: 999px;
+            transition: color 0.2s, background 0.2s;
+        }
+        .navbar__links a:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .navbar__links a.active {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.1);
         }
 
-        .hero,
-        .section {
-            background: var(--panel);
-            backdrop-filter: blur(10px);
+        /* hamburger */
+        .nav-toggle { display: none; }
+        .nav-hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 10;
+        }
+        .nav-hamburger span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--text-main);
+            border-radius: 2px;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        /* ── Page layout ── */
+        .page {
+            width: min(960px, calc(100% - 3rem));
+            margin: 0 auto;
+            padding: 5.5rem 0 4rem;
+        }
+
+        /* ── Hero header ── */
+        .page-hero {
+            background: var(--panel-solid);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             border: 1px solid var(--panel-border);
             border-radius: 24px;
-            box-shadow: 0 12px 35px rgba(30, 36, 48, 0.08);
+            padding: 3rem 2.5rem;
+            margin-bottom: 1.5rem;
         }
-
-        .hero {
-            padding: 2.2rem;
-            margin-bottom: 1rem;
-        }
-
-        .eyebrow {
-            color: var(--accent-dark);
-            font-size: 0.85rem;
+        .page-hero__eyebrow {
             text-transform: uppercase;
-            letter-spacing: 0.12em;
-            margin-bottom: 0.8rem;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            color: var(--accent-a);
+            margin-bottom: 0.75rem;
         }
-
-        h1 {
-            font-size: clamp(2rem, 4vw, 3.4rem);
-            line-height: 1.05;
+        .page-hero__title {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            line-height: 1.15;
             margin-bottom: 1rem;
-            max-width: 12ch;
         }
-
-        .hero p {
+        .page-hero__text {
+            color: var(--text-soft);
+            font-size: 1.05rem;
+            line-height: 1.6;
             max-width: 70ch;
-            color: var(--muted);
-            font-size: 1.04rem;
         }
-
-        .meta {
+        .page-hero__meta {
             display: flex;
             flex-wrap: wrap;
             gap: 0.75rem;
-            margin-top: 1.2rem;
+            margin-top: 1.25rem;
         }
-
-        .meta span {
-            padding: 0.55rem 0.8rem;
+        .page-hero__meta span {
+            padding: 0.5rem 0.85rem;
             border-radius: 999px;
-            background: rgba(221, 107, 56, 0.08);
-            color: var(--accent-dark);
-            border: 1px solid rgba(221, 107, 56, 0.16);
-            font-size: 0.92rem;
+            background: rgba(255, 138, 91, 0.1);
+            color: var(--accent-a);
+            border: 1px solid rgba(255, 138, 91, 0.2);
+            font-size: 0.88rem;
         }
 
-        .grid {
+        /* ── Content cards ── */
+        .content-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
+            gap: 1.25rem;
         }
-
-        .section {
-            padding: 1.5rem;
+        .card {
+            background: var(--panel-solid);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 2rem;
         }
-
-        h2 {
+        .card.full { grid-column: 1 / -1; }
+        .card.highlight {
+            border-left: 3px solid var(--accent-b);
+        }
+        .card h2 {
             font-size: 1.15rem;
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.75rem;
         }
-
-        p,
-        li {
-            color: var(--muted);
+        .card p {
+            color: var(--text-soft);
+            font-size: 0.95rem;
+            line-height: 1.6;
         }
-
-        ul {
+        .card p + p { margin-top: 0.75rem; }
+        .card ul {
             padding-left: 1.1rem;
         }
+        .card li {
+            color: var(--text-soft);
+            font-size: 0.95rem;
+            line-height: 1.55;
+        }
+        .card li + li { margin-top: 0.5rem; }
+        .card strong { color: var(--text-main); }
+        .card a {
+            color: var(--accent-a);
+            text-decoration: none;
+        }
+        .card a:hover { text-decoration: underline; }
 
-        li + li {
-            margin-top: 0.55rem;
+        /* ── Footer ── */
+        .footer {
+            margin-top: 3rem;
+            padding: 3rem 1.5rem;
+            border-top: 1px solid var(--panel-border);
+            text-align: center;
+        }
+        .footer .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--accent-a), var(--accent-b), var(--accent-c), #c4f1be);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            margin-bottom: 0.75rem;
+        }
+        .footer__tagline {
+            color: var(--text-soft);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+        .footer__links {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .footer__links a {
+            color: var(--text-main);
+            text-decoration: none;
+            padding: 0.6rem 1.1rem;
+            border-radius: 999px;
+            border: 1px solid var(--panel-border);
+            background: rgba(255, 255, 255, 0.06);
+            font-size: 0.9rem;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .footer__links a:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .footer__copy {
+            color: var(--text-muted);
+            font-size: 0.8rem;
         }
 
-        .full {
-            grid-column: 1 / -1;
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
-        .note {
-            border-left: 4px solid var(--sea);
-            padding-left: 1rem;
-        }
-
-        strong {
-            color: var(--ink);
-        }
-
-        @media (max-width: 760px) {
-            .page {
-                width: min(100% - 1rem, 960px);
-                padding-top: 0.75rem;
-            }
-
-            .topbar {
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .navbar { padding: 0 1rem; }
+            .navbar__links {
+                position: fixed;
+                top: 3.5rem; right: 0; width: 100%;
                 flex-direction: column;
-                align-items: flex-start;
+                background: rgba(7, 12, 22, 0.96);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                padding: 1rem;
+                gap: 0.25rem;
+                border-bottom: 1px solid var(--panel-border);
+                transform: translateY(-120%);
+                opacity: 0;
+                transition: transform 0.3s, opacity 0.3s;
+                pointer-events: none;
+            }
+            .navbar__links a {
+                padding: 0.75rem 1rem;
+                font-size: 0.95rem;
+                text-align: center;
+            }
+            .nav-hamburger { display: flex; }
+            .nav-toggle:checked ~ .navbar__links {
+                transform: translateY(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
+            .nav-toggle:checked ~ .nav-hamburger span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+            .nav-toggle:checked ~ .nav-hamburger span:nth-child(2) {
+                opacity: 0;
+            }
+            .nav-toggle:checked ~ .nav-hamburger span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
             }
 
-            .hero,
-            .section {
-                border-radius: 20px;
-            }
+            .page { padding: 4.5rem 0 3rem; width: min(100% - 1rem, 960px); }
+            .page-hero { padding: 2rem 1.5rem; border-radius: 20px; }
+            .content-grid { grid-template-columns: 1fr; }
+            .card { border-radius: 20px; padding: 1.5rem; }
+        }
 
-            .hero {
-                padding: 1.5rem;
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
 </head>
 <body>
-    <div class="page">
-        <nav class="topbar" aria-label="Primary">
-            <div class="brand">Riina.io</div>
-            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
-                <a href="account-deletion.html">Delete account</a>
-                <a href="index.html">Back to Home</a>
-            </div>
-        </nav>
 
-        <header class="hero">
-            <div class="eyebrow">Privacy Statement</div>
-            <h1>How Riina uses activity data</h1>
-            <p>
+    <!-- Navbar -->
+    <nav class="navbar" aria-label="Primary">
+        <a href="index.html" class="navbar__brand">riina</a>
+        <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
+        <label for="nav-toggle" class="nav-hamburger" aria-hidden="true">
+            <span></span><span></span><span></span>
+        </label>
+        <div class="navbar__links">
+            <a href="index.html">Home</a>
+            <a href="wearables.html">Wearables</a>
+            <a href="privacy.html" class="active">Privacy</a>
+            <a href="account-deletion.html">Delete Account</a>
+        </div>
+    </nav>
+
+    <div class="page">
+
+        <header class="page-hero">
+            <div class="page-hero__eyebrow">Privacy Statement</div>
+            <h1 class="page-hero__title">How Riina uses activity data</h1>
+            <p class="page-hero__text">
                 This page describes the current activity-data handling reflected in the related Riina application codebase.
                 It focuses on workout, route, profile, social, and analytics data that users sync, upload, or share through the product.
             </p>
-            <div class="meta">
+            <div class="page-hero__meta">
                 <span>Effective date: March 23, 2026</span>
                 <span>Based on current Riina project behavior</span>
             </div>
         </header>
 
-        <div class="grid">
-            <section class="section">
+        <div class="content-grid">
+
+            <section class="card">
                 <h2>What activity data Riina collects</h2>
                 <ul>
                     <li>Workout records imported from Apple HealthKit and Android Health Connect.</li>
@@ -217,7 +340,7 @@
                 </ul>
             </section>
 
-            <section class="section">
+            <section class="card">
                 <h2>How Riina uses that data</h2>
                 <ul>
                     <li>To sync and store workouts, display workout history and details, and calculate training and game statistics.</li>
@@ -227,7 +350,7 @@
                 </ul>
             </section>
 
-            <section class="section">
+            <section class="card">
                 <h2>Analytics and product improvement</h2>
                 <p>
                     The mobile app includes an internal analytics system that records app session and screen-view events.
@@ -236,7 +359,7 @@
                 </p>
             </section>
 
-            <section class="section">
+            <section class="card">
                 <h2>Machine learning and AI processing</h2>
                 <ul>
                     <li>Riina sends heart-rate workout samples, resting heart rate, max heart rate, and activity type to a separate ML classification service to classify workouts.</li>
@@ -244,10 +367,10 @@
                 </ul>
             </section>
 
-            <section class="section full">
+            <section class="card full">
                 <h2>How activity data may be disclosed to other users</h2>
                 <ul>
-                    <li>Workout posts support `public`, `friends`, and `private` visibility states in the application.</li>
+                    <li>Workout posts support <strong>public</strong>, <strong>friends</strong>, and <strong>private</strong> visibility states in the application.</li>
                     <li>If a workout is shared, other users may be able to see workout details, media, comments, reactions, and game-related performance information tied to that workout.</li>
                     <li>GPS route data can be included with shared workouts. Users can disable future route sharing in settings, and the code notes that existing shared routes remain visible. Users can also hide route data on a workout post while preserving the underlying route data.</li>
                     <li>Other authenticated users can access another user's health profile for certain workout-zone fields. The code and tests indicate that resting heart rate, max heart rate, and threshold values may be visible, while age, height, and weight are redacted.</li>
@@ -255,19 +378,19 @@
                 </ul>
             </section>
 
-            <section class="section">
+            <section class="card">
                 <h2>Controls available to users</h2>
                 <ul>
                     <li>Disable analytics tracking in settings.</li>
                     <li>Disable location sharing for future shared workouts.</li>
                     <li>Hide route data on workout posts.</li>
-                    <li>Use workout and post visibility settings such as `public`, `friends`, or `private` where supported.</li>
+                    <li>Use workout and post visibility settings such as <strong>public</strong>, <strong>friends</strong>, or <strong>private</strong> where supported.</li>
                     <li>Enable or disable biometric authentication on the device.</li>
-                    <li>Request deletion of your account and associated data via the <a href="account-deletion.html" style="color:var(--accent-dark);">account deletion</a> page.</li>
+                    <li>Request deletion of your account and associated data via the <a href="account-deletion.html">account deletion</a> page.</li>
                 </ul>
             </section>
 
-            <section class="section">
+            <section class="card">
                 <h2>Security and storage notes</h2>
                 <p>
                     The codebase stores application data in PostgreSQL and media in object storage using signed upload and download URLs.
@@ -275,7 +398,7 @@
                 </p>
             </section>
 
-            <section class="section full note">
+            <section class="card full highlight">
                 <h2>Important implementation note</h2>
                 <p>
                     This statement is intentionally grounded in the current Riina project rather than generic policy language.
@@ -283,7 +406,29 @@
                     this page should be revised to match the new behavior before release.
                 </p>
             </section>
+
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="logo">riina</div>
+        <p class="footer__tagline">A Team Sport App for People who Train Alone.</p>
+        <div class="footer__links">
+            <a href="wearables.html">Wearables</a>
+            <a href="privacy.html">Privacy Statement</a>
+            <a href="account-deletion.html">Account Deletion</a>
+        </div>
+        <p class="footer__copy">&copy; 2025 Riina. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('nav-toggle');
+            document.querySelectorAll('.navbar__links a').forEach(a => {
+                a.addEventListener('click', () => { toggle.checked = false; });
+            });
+        });
+    </script>
 </body>
 </html>
