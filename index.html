@@ -59,11 +59,15 @@
             border-bottom-color: var(--panel-border);
         }
         .navbar__brand {
-            font-size: 1.3rem;
-            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
             color: var(--text-main);
             text-decoration: none;
-            letter-spacing: 1px;
+        }
+        .navbar__brand img {
+            display: block;
+            height: 1.5rem;
+            width: auto;
         }
         .navbar__links {
             display: flex;
@@ -143,6 +147,17 @@
         .accent   { color: var(--accent-a); }
         .accent-b { color: var(--accent-b); }
         .accent-c { color: var(--accent-c); }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
 
         /* ── Hero ── */
         .hero {
@@ -153,25 +168,17 @@
             justify-content: center;
             text-align: center;
             padding: 2rem 1.5rem;
-            background: linear-gradient(var(--bg-overlay), var(--bg-overlay)),
-                        url('assets/riina_bg_nologo.jpeg') center/cover no-repeat;
-            background-attachment: fixed;
+            background: #000;
             position: relative;
         }
         .hero__content {
             animation: fadeInUp 0.8s ease-out both;
         }
         .hero .logo {
-            font-size: clamp(3.5rem, 10vw, 7rem);
-            font-weight: 800;
-            margin-bottom: 1.25rem;
-            background: linear-gradient(45deg, var(--accent-a), var(--accent-b), var(--accent-c), #c4f1be);
-            background-size: 400% 400%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 3s ease-in-out infinite;
-            letter-spacing: 2px;
+            display: block;
+            width: clamp(240px, 55vw, 460px);
+            height: auto;
+            margin: 0 auto 1.75rem;
         }
         .hero__tagline {
             font-size: clamp(1.15rem, 3vw, 1.75rem);
@@ -641,7 +648,6 @@
             }
 
             .section { padding: 5rem 1rem 3rem; }
-            .hero { background-attachment: scroll; }
             .solution-layout {
                 grid-template-columns: 1fr;
                 gap: 2rem;
@@ -667,7 +673,9 @@
 
     <!-- Navbar -->
     <nav class="navbar" aria-label="Primary">
-        <a href="#hero" class="navbar__brand">riina</a>
+        <a href="#hero" class="navbar__brand" aria-label="riina home">
+            <img src="assets/riina-logo-wordmark.svg" alt="riina" />
+        </a>
         <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
         <label for="nav-toggle" class="nav-hamburger" aria-hidden="true">
             <span></span><span></span><span></span>
@@ -687,7 +695,8 @@
     <!-- Hero -->
     <section id="hero" class="hero">
         <div class="hero__content">
-            <h1 class="logo">riina</h1>
+            <h1 class="sr-only">riina</h1>
+            <img class="logo" src="assets/riina-logo-wordmark.svg" alt="riina" />
             <p class="hero__tagline">A Team Sport App for People<br>who Train Alone.</p>
             <a href="#beta" class="hero__cta">Apply for Beta</a>
         </div>
