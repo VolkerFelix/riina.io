@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>riina &mdash; Wearable Troubleshooting</title>
+    <meta name="description" content="Step-by-step troubleshooting for connecting Apple Watch, Garmin, Polar, Fitbit, Samsung, Oura, Whoop, Xiaomi and other wearables to riina via Apple HealthKit and Android Health Connect.">
+    <style>
+        :root {
+            --bg-overlay: rgba(7, 12, 22, 0.58);
+            --bg-solid: rgb(7, 12, 22);
+            --panel: rgba(7, 12, 22, 0.42);
+            --panel-solid: rgba(14, 20, 32, 0.72);
+            --panel-border: rgba(255, 255, 255, 0.14);
+            --text-main: #f5f7fb;
+            --text-soft: rgba(245, 247, 251, 0.7);
+            --text-muted: rgba(245, 247, 251, 0.45);
+            --accent-a: #ff8a5b;
+            --accent-b: #5eead4;
+            --accent-c: #7dd3fc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+            background: var(--bg-solid);
+            color: var(--text-main);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Navbar ── */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            z-index: 1000;
+            padding: 0 1.5rem;
+            height: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(7, 12, 22, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--panel-border);
+        }
+        .navbar__brand {
+            display: inline-flex;
+            align-items: center;
+            color: var(--text-main);
+            text-decoration: none;
+        }
+        .navbar__brand img {
+            display: block;
+            height: 1.5rem;
+            width: auto;
+        }
+        .navbar__links {
+            display: flex;
+            gap: 0.25rem;
+            align-items: center;
+        }
+        .navbar__links a {
+            color: var(--text-soft);
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 0.4rem 0.75rem;
+            border-radius: 999px;
+            transition: color 0.2s, background 0.2s;
+        }
+        .navbar__links a:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .navbar__links a.active {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* hamburger */
+        .nav-toggle { display: none; }
+        .nav-hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 10;
+        }
+        .nav-hamburger span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--text-main);
+            border-radius: 2px;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        /* ── Page layout ── */
+        .page {
+            width: min(960px, calc(100% - 3rem));
+            margin: 0 auto;
+            padding: 5.5rem 0 4rem;
+        }
+
+        /* ── Hero header ── */
+        .page-hero {
+            background: var(--panel-solid);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--panel-border);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .page-hero__eyebrow {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            color: var(--accent-a);
+            margin-bottom: 0.75rem;
+        }
+        .page-hero__title {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 1rem;
+        }
+        .page-hero__text {
+            color: var(--text-soft);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            max-width: 70ch;
+        }
+        .page-hero__crumb {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        .page-hero__crumb a {
+            color: var(--accent-c);
+            text-decoration: none;
+        }
+        .page-hero__crumb a:hover { text-decoration: underline; }
+
+        /* ── Quick jump ── */
+        .quick-jump {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        .quick-jump a {
+            padding: 0.5rem 0.95rem;
+            border-radius: 999px;
+            background: rgba(125, 211, 252, 0.08);
+            border: 1px solid rgba(125, 211, 252, 0.25);
+            color: var(--accent-c);
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .quick-jump a:hover {
+            background: rgba(125, 211, 252, 0.18);
+            transform: translateY(-1px);
+        }
+
+        /* ── Content cards ── */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.25rem;
+        }
+        .card {
+            background: var(--panel-solid);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 2rem;
+            scroll-margin-top: 5rem;
+        }
+        .card.full { grid-column: 1 / -1; }
+        .card.highlight {
+            border-left: 3px solid var(--accent-b);
+        }
+        .card.warn {
+            border-left: 3px solid var(--accent-a);
+        }
+        .card h2 {
+            font-size: 1.15rem;
+            margin-bottom: 0.75rem;
+        }
+        .card h2 .accent { color: var(--accent-a); }
+        .card h2 .accent-b { color: var(--accent-b); }
+        .card h2 .accent-c { color: var(--accent-c); }
+        .card p {
+            color: var(--text-soft);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .card p + p { margin-top: 0.75rem; }
+        .card ul, .card ol {
+            padding-left: 1.1rem;
+        }
+        .card li {
+            color: var(--text-soft);
+            font-size: 0.95rem;
+            line-height: 1.55;
+        }
+        .card li + li { margin-top: 0.5rem; }
+        .card strong { color: var(--text-main); }
+        .card code {
+            font-family: "SF Mono", "Menlo", "Consolas", monospace;
+            font-size: 0.85em;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            padding: 0.1rem 0.4rem;
+            color: var(--text-main);
+        }
+
+        .platform-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .platform-tab {
+            background: rgba(7, 12, 22, 0.5);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            padding: 1.25rem 1.25rem 1.5rem;
+        }
+        .platform-tab h3 {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.85rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid var(--panel-border);
+        }
+        .platform-tab.ios h3 { color: var(--accent-c); border-bottom-color: rgba(125, 211, 252, 0.3); }
+        .platform-tab.android h3 { color: var(--accent-b); border-bottom-color: rgba(94, 234, 212, 0.3); }
+
+        .device-section h2 {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .device-section h2 .device-pill {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            background: rgba(255, 138, 91, 0.1);
+            color: var(--accent-a);
+            border: 1px solid rgba(255, 138, 91, 0.25);
+        }
+
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+        .checklist li {
+            position: relative;
+            padding-left: 1.7rem;
+        }
+        .checklist li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.45rem;
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+            border: 1.5px solid var(--accent-b);
+            background: rgba(94, 234, 212, 0.08);
+        }
+        .checklist li::after {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 0.55rem;
+            width: 4px;
+            height: 8px;
+            border-right: 2px solid var(--accent-b);
+            border-bottom: 2px solid var(--accent-b);
+            transform: rotate(45deg);
+        }
+
+        .symptom-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.85rem;
+            margin-top: 0.75rem;
+        }
+        .symptom {
+            background: rgba(7, 12, 22, 0.5);
+            border: 1px solid var(--panel-border);
+            border-left: 3px solid var(--accent-a);
+            border-radius: 12px;
+            padding: 1rem 1.1rem;
+        }
+        .symptom__label {
+            display: block;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-a);
+            margin-bottom: 0.4rem;
+        }
+        .symptom__text {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .symptom__fix {
+            font-size: 0.9rem;
+            color: var(--text-soft);
+            line-height: 1.55;
+        }
+        .symptom__fix strong { color: var(--text-main); }
+
+        /* ── Footer ── */
+        .footer {
+            margin-top: 3rem;
+            padding: 3rem 1.5rem;
+            border-top: 1px solid var(--panel-border);
+            text-align: center;
+        }
+        .footer .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--accent-a), var(--accent-b), var(--accent-c), #c4f1be);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            margin-bottom: 0.75rem;
+        }
+        .footer__tagline {
+            color: var(--text-soft);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+        .footer__links {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .footer__links a {
+            color: var(--text-main);
+            text-decoration: none;
+            padding: 0.6rem 1.1rem;
+            border-radius: 999px;
+            border: 1px solid var(--panel-border);
+            background: rgba(255, 255, 255, 0.06);
+            font-size: 0.9rem;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .footer__links a:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .footer__copy {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .navbar { padding: 0 1rem; }
+            .navbar__links {
+                position: fixed;
+                top: 3.5rem; right: 0; width: 100%;
+                flex-direction: column;
+                background: rgba(7, 12, 22, 0.96);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                padding: 1rem;
+                gap: 0.25rem;
+                border-bottom: 1px solid var(--panel-border);
+                transform: translateY(-120%);
+                opacity: 0;
+                transition: transform 0.3s, opacity 0.3s;
+                pointer-events: none;
+            }
+            .navbar__links a {
+                padding: 0.75rem 1rem;
+                font-size: 0.95rem;
+                text-align: center;
+            }
+            .nav-hamburger { display: flex; }
+            .nav-toggle:checked ~ .navbar__links {
+                transform: translateY(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
+            .nav-toggle:checked ~ .nav-hamburger span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+            .nav-toggle:checked ~ .nav-hamburger span:nth-child(2) {
+                opacity: 0;
+            }
+            .nav-toggle:checked ~ .nav-hamburger span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
+            }
+
+            .page { padding: 4.5rem 0 3rem; width: min(100% - 1rem, 960px); }
+            .page-hero { padding: 2rem 1.5rem; border-radius: 20px; }
+            .content-grid { grid-template-columns: 1fr; }
+            .card { border-radius: 20px; padding: 1.5rem; }
+            .platform-tabs { grid-template-columns: 1fr; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar" aria-label="Primary">
+        <a href="index.html" class="navbar__brand" aria-label="riina home">
+            <img src="assets/riina-logo-wordmark.svg" alt="riina" />
+        </a>
+        <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
+        <label for="nav-toggle" class="nav-hamburger" aria-hidden="true">
+            <span></span><span></span><span></span>
+        </label>
+        <div class="navbar__links">
+            <a href="index.html">Home</a>
+            <a href="wearables.html">Wearables</a>
+            <a href="troubleshooting.html" class="active">Troubleshooting</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="account-deletion.html">Delete Account</a>
+        </div>
+    </nav>
+
+    <div class="page">
+
+        <header class="page-hero">
+            <div class="page-hero__crumb">
+                <a href="wearables.html">&larr; Wearables</a>
+            </div>
+            <div class="page-hero__eyebrow">Troubleshooting</div>
+            <h1 class="page-hero__title">Connecting your wearable to riina</h1>
+            <p class="page-hero__text">
+                riina does not pair with wearables directly. Instead, it reads workout and heart rate data from
+                <strong>Apple HealthKit</strong> on iOS and <strong>Android Health Connect</strong> on Android.
+                If your watch or strap can sync to one of these platforms, it can score in riina. This page walks
+                you through the most common connection issues per device family and how to fix them.
+            </p>
+            <div class="quick-jump">
+                <a href="#first-checks">First checks</a>
+                <a href="#apple-watch">Apple Watch</a>
+                <a href="#garmin">Garmin</a>
+                <a href="#polar">Polar</a>
+                <a href="#fitbit">Fitbit</a>
+                <a href="#samsung">Samsung</a>
+                <a href="#oura">Oura</a>
+                <a href="#whoop">Whoop</a>
+                <a href="#xiaomi">Xiaomi / Amazfit</a>
+                <a href="#chest-strap">Chest straps</a>
+                <a href="#still-stuck">Still stuck?</a>
+            </div>
+        </header>
+
+        <div class="content-grid">
+
+            <!-- First checks -->
+            <section id="first-checks" class="card full highlight">
+                <h2>Start here: <span class="accent-b">first checks</span> for any device</h2>
+                <p>
+                    More than 80% of "missing workout" tickets we see are fixed by one of the items below.
+                    Run through this list before diving into the brand-specific sections.
+                </p>
+                <div class="platform-tabs">
+                    <div class="platform-tab ios">
+                        <h3>iOS &middot; Apple HealthKit</h3>
+                        <ol>
+                            <li>Open <strong>Settings &rarr; Privacy &amp; Security &rarr; Health &rarr; riina</strong> and enable <strong>Turn On All</strong> (specifically Heart Rate, Workouts, Active Energy, Resting Heart Rate).</li>
+                            <li>In the Health app, open <strong>Browse &rarr; Heart &rarr; Heart Rate</strong> and confirm recent samples exist. If Health is empty, riina has nothing to import.</li>
+                            <li>Force-quit and reopen riina. We poll for new workouts on launch and on background refresh.</li>
+                            <li>Make sure <strong>Background App Refresh</strong> is on for riina (Settings &rarr; General &rarr; Background App Refresh).</li>
+                        </ol>
+                    </div>
+                    <div class="platform-tab android">
+                        <h3>Android &middot; Health Connect</h3>
+                        <ol>
+                            <li>Install <strong>Health Connect</strong> from the Play Store if it is not already on your device. On Android 14+ it is built in.</li>
+                            <li>Open Health Connect &rarr; <strong>App permissions &rarr; riina</strong> and grant Heart Rate, Exercise, and Total Energy Burned (Read).</li>
+                            <li>In Health Connect &rarr; <strong>Data and access &rarr; Heart rate</strong>, confirm samples exist from your wearable's companion app.</li>
+                            <li>Disable battery optimization for riina so background syncs are not killed (<strong>Settings &rarr; Apps &rarr; riina &rarr; Battery &rarr; Unrestricted</strong>).</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Apple Watch -->
+            <section id="apple-watch" class="card full device-section">
+                <h2>Apple Watch <span class="device-pill">iOS only</span></h2>
+                <p>
+                    Workouts started from the native <strong>Workout app</strong> on Apple Watch produce the cleanest data
+                    for riina. Third-party workout apps (Strava, Nike Run Club, etc.) also work as long as they save to Health.
+                </p>
+                <div class="symptom-grid">
+                    <div class="symptom">
+                        <span class="symptom__label">Symptom</span>
+                        <p class="symptom__text">Workout shows in Apple Health but not in riina.</p>
+                        <p class="symptom__fix">
+                            <strong>Fix:</strong> riina only imports workouts longer than 5 minutes with continuous HR samples.
+                            Open the workout in Health, tap <strong>Heart Rate</strong>, and confirm a sample-rich curve exists.
+                            If the curve is sparse, the watch lost wrist contact mid-workout &mdash; tighten the band one notch and re-record.
+                        </p>
+                    </div>
+                    <div class="symptom">
+                        <span class="symptom__label">Symptom</span>
+                        <p class="symptom__text">Permissions screen says "No data" even after granting access.</p>
+                        <p class="symptom__fix">
+                            <strong>Fix:</strong> iOS sometimes silently revokes permissions after an OS update. Toggle riina's
+                            Health permissions <strong>off and back on</strong> in Settings &rarr; Health &rarr; Data Access &amp; Devices &rarr; riina.
+                        </p>
+                    </div>
+                    <div class="symptom">
+                        <span class="symptom__label">Symptom</span>
+                        <p class="symptom__text">Score drops mid-workout (low HR readings during HIIT).</p>
+                        <p class="symptom__fix">
+                            <strong>Fix:</strong> Wrist flexion confuses the optical sensor. Wear the watch <strong>1&ndash;2 finger-widths above the wrist bone</strong>,
+                            tighten the band, and consider pairing a chest strap for HIIT &mdash; see <a href="wearables.html" style="color: var(--accent-c);">our gear page</a>.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Garmin -->
+            <section id="garmin" class="card full device-section">
+                <h2>Garmin <span class="device-pill">iOS &amp; Android</span></h2>
+                <p>
+                    Garmin syncs through the <strong>Garmin Connect</strong> app, which then writes to HealthKit (iOS) or Health Connect (Android).
+                    The most common failure mode is the bridge between Connect and the platform health store, not the watch itself.
+                </p>
+                <ul class="checklist">
+                    <li>In <strong>Garmin Connect &rarr; More &rarr; Settings &rarr; Connected Apps</strong>, confirm Apple Health or Health Connect is listed and enabled.</li>
+                    <li>For iOS: open Health &rarr; Sources &rarr; <strong>Garmin Connect</strong> and turn on every category (Heart Rate, Workouts, Active Energy minimum).</li>
+                    <li>For Android: open Health Connect &rarr; App permissions &rarr; <strong>Garmin Connect</strong> &rarr; Allow all (Write).</li>
+                    <li>Open Garmin Connect after each ride/run to trigger the sync. Garmin does not push to Health stores in real time &mdash; the Connect app must be opened or running.</li>
+                    <li>If the watch shows the activity but Connect does not, swipe down on the activity list inside Connect to force a Bluetooth re-sync from the watch.</li>
+                </ul>
+            </section>
+
+            <!-- Polar -->
+            <section id="polar" class="card device-section">
+                <h2>Polar <span class="device-pill">iOS &amp; Android</span></h2>
+                <p>
+                    Polar Flow is the bridge. The integration is slightly hidden in the app.
+                </p>
+                <ul class="checklist">
+                    <li>In <strong>Polar Flow app &rarr; Settings &rarr; General &rarr; Apple Health / Health Connect</strong>, toggle the integration on.</li>
+                    <li>Polar pushes a workout to Health stores only after sync from the watch completes. Make sure the watch syncs to Flow first (open the watch, hold back button to force sync).</li>
+                    <li>For chest straps (H10, H9): pair directly to a workout app on the phone (e.g. Polar Beat) so the strap's data is captured as a Workout entry, not just an HR sample.</li>
+                </ul>
+            </section>
+
+            <!-- Fitbit -->
+            <section id="fitbit" class="card device-section warn">
+                <h2>Fitbit <span class="device-pill">Android (limited iOS)</span></h2>
+                <p>
+                    Fitbit historically did <strong>not</strong> expose workout data to Apple HealthKit. Since the Google
+                    acquisition, Fitbit on Android can write to Health Connect, but iOS support is still missing.
+                </p>
+                <ul class="checklist">
+                    <li><strong>Android:</strong> in the Fitbit app &rarr; Profile picture &rarr; <strong>Health Connect</strong>, enable the integration and grant write permission for Heart Rate and Exercise.</li>
+                    <li><strong>iOS:</strong> Fitbit does not natively bridge to HealthKit. Use a third-party bridge (e.g. <em>HealthFit</em> or <em>SyncSolver</em>) at your own risk &mdash; we cannot guarantee data fidelity. We recommend switching to a HealthKit-native device for clean scoring.</li>
+                </ul>
+            </section>
+
+            <!-- Samsung -->
+            <section id="samsung" class="card device-section">
+                <h2>Samsung Galaxy Watch <span class="device-pill">Android</span></h2>
+                <p>
+                    Samsung Health is the source. The Galaxy Watch line writes to Health Connect via the Samsung Health app.
+                </p>
+                <ul class="checklist">
+                    <li>Open <strong>Samsung Health &rarr; Settings &rarr; Health Connect</strong> and toggle the integration on.</li>
+                    <li>Grant write permission for <strong>Heart Rate</strong>, <strong>Exercise</strong>, and <strong>Active Energy</strong>.</li>
+                    <li>Samsung Health on iOS does <em>not</em> integrate with HealthKit. If you switch to an iPhone, your Galaxy Watch data will not flow to riina.</li>
+                </ul>
+            </section>
+
+            <!-- Oura -->
+            <section id="oura" class="card device-section">
+                <h2>Oura Ring <span class="device-pill">iOS &amp; Android</span></h2>
+                <p>
+                    Oura is built primarily for sleep and recovery, not workouts. Its HR data flows to riina, but you usually
+                    need to <strong>tag a workout manually</strong> in the Oura app for it to be picked up as a scorable session.
+                </p>
+                <ul class="checklist">
+                    <li>In the Oura app &rarr; <strong>Settings &rarr; Apple Health / Health Connect</strong>, enable the integration.</li>
+                    <li>For each workout, open the Oura app and confirm the auto-detected activity is correctly tagged. Otherwise it logs only as an "active period" without a workout boundary.</li>
+                    <li>Oura's wrist-equivalent PPG samples are less dense during high-intensity work. For HIIT or CrossFit, pair with a chest strap and let riina score that session instead.</li>
+                </ul>
+            </section>
+
+            <!-- Whoop -->
+            <section id="whoop" class="card device-section warn">
+                <h2>Whoop <span class="device-pill">indirect only</span></h2>
+                <p>
+                    Whoop does not natively write to Apple HealthKit or Android Health Connect. It is a closed ecosystem.
+                </p>
+                <ul class="checklist">
+                    <li>Use the Whoop app's Strava integration as a relay: enable Strava in Whoop, then enable Strava &rarr; Health Connect or HealthKit on your phone. Heart rate fidelity through this chain is reduced.</li>
+                    <li>For best results in riina, run a parallel workout on a HealthKit/Health-Connect-native device (Apple Watch, Garmin, Polar) and let Whoop continue tracking recovery in the background.</li>
+                </ul>
+            </section>
+
+            <!-- Xiaomi -->
+            <section id="xiaomi" class="card device-section">
+                <h2>Xiaomi &amp; Amazfit <span class="device-pill">Android &amp; iOS</span></h2>
+                <p>
+                    Xiaomi (Mi Band, Mi Watch) syncs through the <strong>Mi Fitness</strong> or <strong>Zepp Life</strong> app.
+                    Amazfit uses the <strong>Zepp</strong> app. All three can bridge to Health stores, but the integrations are off by default.
+                </p>
+                <ul class="checklist">
+                    <li><strong>Mi Fitness / Zepp Life:</strong> Profile &rarr; Settings &rarr; <strong>Apple Health / Health Connect</strong> &rarr; turn on, then grant write permissions for Heart Rate and Exercise.</li>
+                    <li><strong>Zepp (Amazfit):</strong> Profile &rarr; <strong>Add Accounts</strong> &rarr; Apple Health or Health Connect &rarr; enable.</li>
+                    <li>These apps push workouts only after the band syncs over Bluetooth. Open the companion app right after a workout to trigger the chain.</li>
+                </ul>
+            </section>
+
+            <!-- Chest straps -->
+            <section id="chest-strap" class="card full device-section">
+                <h2>Chest straps and external HR sensors</h2>
+                <p>
+                    A chest strap on its own is just a Bluetooth HR broadcaster &mdash; it does not create a workout record. You
+                    need to pair it to a watch <em>or</em> a phone workout app that writes to your platform's health store.
+                </p>
+                <div class="platform-tabs">
+                    <div class="platform-tab ios">
+                        <h3>iOS recipes</h3>
+                        <ul class="checklist">
+                            <li>Apple Watch + chest strap (Polar H10 etc.): in <strong>Watch &rarr; Settings &rarr; Bluetooth</strong>, pair the strap. The Workout app will prefer the strap signal automatically.</li>
+                            <li>Phone-only: use the <strong>Polar Beat</strong>, <strong>HRV4Training</strong>, or <strong>Wahoo Fitness</strong> app to record a workout straight from the strap. All three save to HealthKit.</li>
+                        </ul>
+                    </div>
+                    <div class="platform-tab android">
+                        <h3>Android recipes</h3>
+                        <ul class="checklist">
+                            <li>Pair the strap to your wearable (Garmin, Polar, Wear OS) so it overrides the wrist sensor during the workout.</li>
+                            <li>Phone-only: use <strong>Wahoo Fitness</strong> or <strong>Polar Beat</strong>; both write to Health Connect.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Generic symptoms -->
+            <section id="symptoms" class="card full">
+                <h2>Common symptoms across all devices</h2>
+                <div class="symptom-grid">
+                    <div class="symptom">
+                        <span class="symptom__label">Symptom</span>
+                        <p class="symptom__text">"No workouts yet" on the riina home screen, even after a session.</p>
+                        <p class="symptom__fix">
+                            <strong>Fix:</strong> the workout is shorter than 5 minutes, has no HR samples, or has not yet synced from the wearable to the
+                            companion app. Open your wearable's app first, confirm the workout is there, then open riina.
+                        </p>
+                    </div>
+                    <div class="symptom">
+                        <span class="symptom__label">Symptom</span>
+                        <p class="symptom__text">Workouts import but score is suspiciously low or zero.</p>
+                        <p class="symptom__fix">
+                            <strong>Fix:</strong> riina needs <strong>Resting HR</strong> and <strong>Max HR</strong> to compute zones. If your wearable does
+                            not write Resting HR (some fitness bands don't), set it manually in <strong>riina &rarr; Profile &rarr; Heart Rate</strong>.
+                        </p>
+                    </div>
+                    <div class="symptom">
+                        <span class="symptom__label">Symptom</span>
+                        <p class="symptom__text">Duplicate workouts (same session, two scores).</p>
+                        <p class="symptom__fix">
+                            <strong>Fix:</strong> two apps are writing the same workout (e.g. Strava + Apple Watch). In Health, pin a single source as the
+                            primary writer for Workouts in <strong>Health &rarr; Sources &rarr; Apps</strong> by reordering or disabling duplicate writers.
+                        </p>
+                    </div>
+                    <div class="symptom">
+                        <span class="symptom__label">Symptom</span>
+                        <p class="symptom__text">HR samples are missing or flat for chunks of the workout.</p>
+                        <p class="symptom__fix">
+                            <strong>Fix:</strong> almost always a wrist-fit problem on optical sensors. Tighten the band, move it higher on the wrist, and warm
+                            up for 2&ndash;3 minutes before any sprint. Tattoos on the underside of the wrist also kill PPG signal &mdash; switch to a chest strap.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stuck -->
+            <section id="still-stuck" class="card full highlight">
+                <h2>Still stuck?</h2>
+                <p>
+                    Send us your wearable model, phone OS version, and a screenshot of the workout in your wearable's app
+                    plus the Health/Health Connect entry. We can usually pinpoint where the chain breaks within a day.
+                </p>
+                <p>
+                    Email <a href="mailto:support@riina.io" style="color: var(--accent-c);">support@riina.io</a> &mdash;
+                    or, if you are in the beta, drop a note in the in-app feedback form.
+                </p>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="logo">riina</div>
+        <p class="footer__tagline">A Team Sport App for People who Train Alone.</p>
+        <div class="footer__links">
+            <a href="wearables.html">Wearables</a>
+            <a href="troubleshooting.html">Troubleshooting</a>
+            <a href="privacy.html">Privacy Statement</a>
+            <a href="account-deletion.html">Account Deletion</a>
+        </div>
+        <p class="footer__copy">&copy; 2025 Riina. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('nav-toggle');
+            document.querySelectorAll('.navbar__links a').forEach(a => {
+                a.addEventListener('click', () => { toggle.checked = false; });
+            });
+        });
+    </script>
+</body>
+</html>
