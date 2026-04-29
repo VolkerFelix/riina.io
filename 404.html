@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>riina &mdash; Invite</title>
+    <meta name="description" content="Join your friend on riina.">
+    <meta property="og:title" content="Join me on riina">
+    <meta property="og:type" content="website">
+    <meta name="apple-itunes-app" content="app-id=APPLE_APP_ID_PLACEHOLDER">
+    <style>
+        :root {
+            --bg-solid: rgb(7, 12, 22);
+            --panel: rgba(14, 20, 32, 0.72);
+            --panel-border: rgba(255, 255, 255, 0.14);
+            --text-main: #f5f7fb;
+            --text-soft: rgba(245, 247, 251, 0.7);
+            --text-muted: rgba(245, 247, 251, 0.45);
+            --accent-a: #ff8a5b;
+            --accent-b: #5eead4;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+            background: var(--bg-solid);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            -webkit-font-smoothing: antialiased;
+        }
+        .card {
+            width: 100%;
+            max-width: 26rem;
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 1.25rem;
+            padding: 2rem 1.75rem;
+            text-align: center;
+            backdrop-filter: blur(16px);
+        }
+        h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .lead { color: var(--text-soft); font-size: 1rem; line-height: 1.45; margin-bottom: 1.5rem; }
+        .code-label { color: var(--text-muted); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .code {
+            font-family: "SF Mono", Menlo, Consolas, monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--panel-border);
+            border-radius: 0.75rem;
+            background: rgba(0, 0, 0, 0.25);
+            color: var(--accent-b);
+            margin-bottom: 0.5rem;
+            user-select: all;
+        }
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .copy-btn:hover { color: var(--text-soft); }
+        .stores { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem; }
+        .store-btn {
+            display: block;
+            text-decoration: none;
+            background: var(--text-main);
+            color: var(--bg-solid);
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.875rem 1rem;
+            border-radius: 0.75rem;
+            transition: transform 0.1s;
+        }
+        .store-btn:hover { transform: translateY(-1px); }
+        .store-btn--secondary { background: transparent; color: var(--text-main); border: 1px solid var(--panel-border); }
+        .footer {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-top: 1rem;
+            line-height: 1.5;
+        }
+        .footer a { color: var(--text-soft); text-decoration: none; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div id="invite-view" class="hidden">
+            <h1>Join me on riina</h1>
+            <p class="lead">You've been invited. Install the app, then sign up — your friend gets the credit automatically.</p>
+
+            <div class="code-label">Invite code</div>
+            <div id="code" class="code">--------</div>
+            <button class="copy-btn" id="copy-btn" type="button">Copy code</button>
+
+            <div class="stores">
+                <a id="ios-link" class="store-btn" href="#" rel="noopener">Get it on the App Store</a>
+                <a id="android-link" class="store-btn" href="#" rel="noopener">Get it on Google Play</a>
+                <a id="open-app" class="store-btn store-btn--secondary" href="#">Already have the app? Open it</a>
+            </div>
+
+            <p class="footer">If you already have riina installed, this link should open the app directly. If not, install first — the invite code is auto-applied when you sign up.</p>
+        </div>
+
+        <div id="missing-view" class="hidden">
+            <h1>Page not found</h1>
+            <p class="lead">That link doesn't lead anywhere. Head back to <a href="/" style="color: var(--accent-b);">riina.io</a>.</p>
+        </div>
+    </div>
+
+    <script>
+        // Replace these once the app is published.
+        var IOS_APP_ID = 'APPLE_APP_ID_PLACEHOLDER'; // e.g. 1234567890
+        var ANDROID_PACKAGE = 'io.riina.app';
+
+        var iosUrl = 'https://apps.apple.com/app/id' + IOS_APP_ID;
+        var androidUrl = 'https://play.google.com/store/apps/details?id=' + ANDROID_PACKAGE;
+
+        var path = window.location.pathname || '';
+        var match = path.match(/^\/r\/([A-Za-z0-9]+)\/?$/);
+
+        if (match) {
+            var code = match[1].toUpperCase();
+            var appUrl = 'riina://r/' + code;
+
+            document.getElementById('invite-view').classList.remove('hidden');
+            document.getElementById('code').textContent = code;
+            document.getElementById('ios-link').href = iosUrl;
+            document.getElementById('android-link').href = androidUrl;
+            document.getElementById('open-app').href = appUrl;
+
+            document.getElementById('copy-btn').addEventListener('click', function () {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(code).then(function () {
+                        var btn = document.getElementById('copy-btn');
+                        var originalText = btn.textContent;
+                        btn.textContent = 'Copied!';
+                        setTimeout(function () { btn.textContent = originalText; }, 1500);
+                    });
+                }
+            });
+
+            // Best-effort: try the custom scheme so an already-installed app
+            // intercepts. Universal Links / App Links normally do this before
+            // the page loads, so this only fires on platforms or builds that
+            // didn't intercept (older OS, browsers that disable AL, web).
+            // Wrapped in setTimeout so the page paints first.
+            setTimeout(function () { window.location.href = appUrl; }, 250);
+        } else {
+            document.getElementById('missing-view').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

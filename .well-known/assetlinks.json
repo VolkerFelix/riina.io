@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "io.riina.app",
+      "sha256_cert_fingerprints": [
+        "4B:CF:12:31:F7:50:8D:11:C8:25:01:C6:C2:89:E8:B4:F2:47:8B:77:C9:3C:40:60:D4:DB:0F:CB:05:FA:9E:F5"
+      ]
+    }
+  }
+]
