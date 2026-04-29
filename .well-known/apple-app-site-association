@@ -1,0 +1,12 @@
+{
+    "applinks": {
+    "details": [
+        {
+        "appIDs": ["6BG2KPTWXB.io.riina.app"],
+        "components": [
+            { "/": "/r/*", "comment": "Referral links" }
+        ]
+        }
+    ]
+    }
+}
